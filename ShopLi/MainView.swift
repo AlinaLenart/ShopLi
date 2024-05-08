@@ -11,18 +11,19 @@ struct MainView: View {
     var body: some View {
         TabView {
             ContentView()
-                .tabItem {
-                    Label("Lists", systemImage: "list.dash")
-                }
-            AddView()
-                .tabItem {
-                    Label("Add new", systemImage: "square.and.pencil")
-                }
+//                .tabItem {
+//                    Label("All Lists", systemImage: "list.dash")
+//                }
+//            CreateListView(package: package)
+//                .tabItem {
+//                    Label("Create new", systemImage: "pencil")
+//                }
         }
     }
 }
 
-
-#Preview {
-    ContentView()
+struct MainView_Previews: PreviewProvider {
+    static var previews: some View {
+        MainView()
+    }
 }

@@ -1,13 +1,22 @@
 import Foundation
 
-class Package {
-    private var lists: [List]
+class Package: ObservableObject {
+    @Published private var lists: [ShoppingList]
+    
     init(){
         self.lists = []
     }
+    
+    func getLists() -> [ShoppingList] {
+        return lists
+    }
+    
+    func addList(_ list: ShoppingList) {
+        lists.append(list)
+    }
 }
 
-class List: Identifiable {
+class ShoppingList: Identifiable {
     var id = UUID()
     private var name: String
     private var products: [Product]
@@ -32,11 +41,17 @@ class List: Identifiable {
             products[index].toggleChecked()
         }
     }
+    func getName() -> String {
+        return name;
+    }
+    func getProducts() -> [Product] {
+        return products
+    }
     
 }
 
-class Product: Equatable {
-    
+class Product: Identifiable, Equatable, Hashable {
+    var id = UUID()
     private var name: String
     private var isChecked: Bool
     
@@ -51,5 +66,17 @@ class Product: Equatable {
     
     static func == (lhs: Product, rhs: Product) -> Bool {
         return lhs.name == rhs.name && lhs.isChecked == rhs.isChecked
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+    
+    func getName() -> String {
+        return name;
+    }
+    
+    func getIsChecked() -> Bool {
+        return isChecked
     }
 }
