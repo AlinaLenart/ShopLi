@@ -1,47 +1,62 @@
 import Foundation
 import SwiftUI
 
+final class ContentViewModel: ObservableObject {
+    @Published var showingCreateListView = false
+
+    let package: Package
+
+    init(package: Package) {
+        self.package = package
+    }
+
+    func onDelete(indexSet: IndexSet) {
+        indexSet.forEach { index in
+            package.deleteList(package.getLists()[index])
+        }
+    }
+}
+
 struct ContentView: View {
-    @State private var newListName = ""
-    @StateObject private var package = Package()
+    @StateObject var viewModel: ContentViewModel
     @State private var showingCreateListView = false
-    @State private var isEditMode = false
 
     var body: some View {
         NavigationView {
             VStack {
-                List {
-                    ForEach(package.getLists()) { list in
-                        NavigationLink(destination: ListView(list: list)) {
-                            Text(list.getName())
-                        }
-                    }
-                    .onDelete { indexSet in
-                        indexSet.forEach { index in
-                            package.deleteList(package.getLists()[index])
-                        }
-                    }
-                }
-                .listStyle(.grouped)
-                
-
+                makeList()
                 Spacer()
-
-                Button(action: {
-                    showingCreateListView = true
-                }) {
-                    Image(systemName: "plus")
-                        .imageScale(.large)
-                        .foregroundColor(.accentColor)
-                        .frame(width: 44, height: 44)
-                }
-                .padding()
+                makeCTASection()
             }
             .navigationBarTitle("Your Lists")
             .navigationBarItems(trailing: EditButton())
-            .sheet(isPresented: $showingCreateListView) {
-                CreateListView(package: package)
+            .sheet(isPresented: $viewModel.showingCreateListView) {
+                CreateListView(package: viewModel.package)
             }
         }
+    }
+
+    @ViewBuilder private func makeList() -> some View {
+        List {
+            ForEach(viewModel.package.getLists()) { list in
+                NavigationLink(destination: ListView(list: list)) {
+                    Text(list.getName())
+                }
+            }
+            .onDelete(perform: viewModel.onDelete)
+        }
+        .listStyle(.grouped)
+    }
+
+    @ViewBuilder private func makeCTASection() -> some View {
+        Button(action: {
+            viewModel.showingCreateListView = true
+        }) {
+            Image(systemName: "plus")
+                .imageScale(.large)
+                .foregroundColor(.accentColor)
+                .frame(width: 44, height: 44)
+        }
+        .padding()
     }
 }
