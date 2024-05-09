@@ -8,7 +8,12 @@ struct ListView: View {
         VStack {
             List {
                 ForEach(list.getProducts()) { product in
-                    ProductRow(product: product, list: list)
+                    ProductRow(product: product) {
+                        product.toggleChecked()
+                    } onThrashTapped: {
+                        list.deleteProduct(productToDelete: product)
+                    }
+//                    ProductRow(product: product, list: list)
                 }
             }
             .padding()
@@ -42,18 +47,18 @@ struct ListView: View {
         .navigationBarTitle(list.getName())
         .navigationBarTitleDisplayMode(.inline)
     }
-    
-
 }
 
 struct ProductRow: View {
-    @ObservedObject var product: Product
-    var list: ShoppingList
+    let product: Product
+
+    var onToggleTapped: () -> Void
+    var onThrashTapped: () -> Void
 
     var body: some View {
         HStack {
             Button(action: {
-                product.toggleChecked()
+                onToggleTapped()
             }) {
                 Image(systemName: product.getIsChecked() ? "checkmark.square.fill" : "square")
             }
@@ -64,7 +69,7 @@ struct ProductRow: View {
             Spacer()
 
             Button(action: {
-                list.deleteProduct(productToDelete: product)
+                onThrashTapped()
             }) {
                 Image(systemName: "trash")
             }
