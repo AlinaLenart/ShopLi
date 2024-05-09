@@ -7,11 +7,11 @@ class Package: ObservableObject {
         self.lists = []
                 let product1 = Product(name: "Apples")
                 let product2 = Product(name: "Bananas")
-                let product3 = Product(name: "Milk")
-                let product4 = Product(name: "Bread")
+                let product3 = Product(name: "Vitamin D")
+                let product4 = Product(name: "Magnesium")
                 
                 let list1 = ShoppingList(name: "Grocery", products: [product1, product2])
-                let list2 = ShoppingList(name: "To Do", products: [product3, product4])
+                let list2 = ShoppingList(name: "Suplements", products: [product3, product4])
                 
                 addList(list1)
                 addList(list2)
@@ -23,6 +23,12 @@ class Package: ObservableObject {
     
     func addList(_ list: ShoppingList) {
         lists.append(list)
+    }
+    
+    func deleteList(_ list: ShoppingList) {
+        if let index = lists.firstIndex(where: { $0.id == list.id }) {
+            lists.remove(at: index)
+        }
     }
 }
 
@@ -45,6 +51,10 @@ class ShoppingList: Identifiable, ObservableObject {
         }
     }
     
+    func addProduct(_ product: Product) {
+        products.append(product)
+    }
+    
     func checkProduct(productToCheck: Product){
         if let index = products.firstIndex(where: { $0 == productToCheck }) {
             
@@ -54,6 +64,9 @@ class ShoppingList: Identifiable, ObservableObject {
     
     func getName() -> String {
         return name;
+    }
+    func setName(_ newName: String) -> Void {
+        self.name = newName
     }
     func getProducts() -> [Product] {
         return products

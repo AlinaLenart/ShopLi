@@ -50,7 +50,7 @@ struct CreateListView: View {
             .navigationTitle("Added products") //TODO: nie pokazuje tytulu
             
             Button(action: {
-                let createdList = ShoppingList(name: newListName, products: productsList) //var?, czy bedzie sie zmienialo?
+                var createdList = ShoppingList(name: newListName, products: productsList)
                 //print("New list created: \(createdList.getName()) \(createdList.getProducts())")
                 self.package.addList(createdList)
                 //print("Lists in package after adding: \(package.getLists())")
