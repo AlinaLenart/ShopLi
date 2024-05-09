@@ -5,6 +5,16 @@ class Package: ObservableObject {
     
     init(){
         self.lists = []
+                let product1 = Product(name: "Apples")
+                let product2 = Product(name: "Bananas")
+                let product3 = Product(name: "Milk")
+                let product4 = Product(name: "Bread")
+                
+                let list1 = ShoppingList(name: "Grocery", products: [product1, product2])
+                let list2 = ShoppingList(name: "To Do", products: [product3, product4])
+                
+                addList(list1)
+                addList(list2)
     }
     
     func getLists() -> [ShoppingList] {
@@ -16,10 +26,10 @@ class Package: ObservableObject {
     }
 }
 
-class ShoppingList: Identifiable {
+class ShoppingList: Identifiable, ObservableObject {
     var id = UUID()
-    private var name: String
-    private var products: [Product]
+    @Published private var name: String
+    @Published private var products: [Product]
     //var creationDate: Date
     //var isTemplate: Bool
     
@@ -41,6 +51,7 @@ class ShoppingList: Identifiable {
             products[index].toggleChecked()
         }
     }
+    
     func getName() -> String {
         return name;
     }
@@ -50,10 +61,10 @@ class ShoppingList: Identifiable {
     
 }
 
-class Product: Identifiable, Equatable, Hashable {
+class Product: Identifiable, Equatable, Hashable, ObservableObject {
     var id = UUID()
     private var name: String
-    private var isChecked: Bool
+    @Published private var isChecked: Bool
     
     init(name: String){
         self.name = name

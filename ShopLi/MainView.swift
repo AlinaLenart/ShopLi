@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  ShopLi
-//
-//  Created by Alina Lenart on 30/04/2024.
-//
-
 import SwiftUI
 
 struct MainView: View {
