@@ -1,6 +1,32 @@
 import SwiftUI
 
-struct ListView: View {
+final class ListDetailsViewModel: ObservableObject {
+    @Published var newListName = ""
+    @Published var productName = ""
+    @Published var productsList: [Product] = []
+
+    let package: Package
+
+    init(package: Package) {
+        self.package = package
+    }
+
+    func addProduct() {
+        guard !productName.isEmpty else { return }
+        
+        let newProduct = Product(name: productName)
+        productsList.append(newProduct)
+        productName = ""
+    }
+
+    func saveList(presentationMode: Binding<PresentationMode>) {
+        let createdList = ShoppingList(name: newListName, products: productsList)
+        package.addList(createdList)
+        presentationMode.wrappedValue.dismiss()
+    }
+}
+
+struct ListDetailsView: View {
     @ObservedObject var list: ShoppingList
     @State private var newProductName = ""
 
@@ -8,13 +34,15 @@ struct ListView: View {
         VStack {
             List {
                 ForEach(list.getProducts()) { product in
-                    ProductRow(product: product) {
-                        product.toggleChecked()
-                    } onThrashTapped: {
-                        list.deleteProduct(productToDelete: product)
-                    }
-//                    ProductRow(product: product, list: list)
+                    ProductRow(product: product,
+                        onToggleTapped: {
+                            product.toggleChecked()
+                        },
+                        onTrashTapped: {
+                            list.deleteProduct(productToDelete: product)
+                        })
                 }
+
             }
             .padding()
             .listStyle(.insetGrouped)
@@ -50,10 +78,9 @@ struct ListView: View {
 }
 
 struct ProductRow: View {
-    let product: Product
-
+    @ObservedObject var product: Product
     var onToggleTapped: () -> Void
-    var onThrashTapped: () -> Void
+    var onTrashTapped: () -> Void
 
     var body: some View {
         HStack {
@@ -69,7 +96,7 @@ struct ProductRow: View {
             Spacer()
 
             Button(action: {
-                onThrashTapped()
+                onTrashTapped()
             }) {
                 Image(systemName: "trash")
             }

@@ -1,71 +1,97 @@
 import Foundation
 import SwiftUI
 
+final class CreateListViewModel: ObservableObject {
+    @Published var newListName = ""
+    @Published var productName = ""
+    @Published var productsList: [Product] = []
+
+    let package: Package
+
+    init(package: Package) {
+        self.package = package
+    }
+
+    func addProduct() {
+        guard !productName.isEmpty else { return }
+        
+        let newProduct = Product(name: productName)
+        productsList.append(newProduct)
+        productName = ""
+    }
+
+    func saveList(presentationMode: Binding<PresentationMode>) {
+        let createdList = ShoppingList(name: newListName, products: productsList)
+        package.addList(createdList)
+        presentationMode.wrappedValue.dismiss()
+    }
+}
+
+
 struct CreateListView: View {
-    @State private var newListName = ""
-    @State private var productName = ""
-    @State private var productsList: [Product] = []
+
+    @StateObject var viewModel: CreateListViewModel
     @Environment(\.presentationMode) var presentationMode
-    //@State private var closeAddingView = false
-    var package: Package
     
     var body: some View {
-        VStack {
-            TextField("Enter list name", text: $newListName)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .fixedSize()
-                .fontWeight(.semibold)
-                .font(.largeTitle)
-                .padding()
-            
-            TextField("Enter product name", text: $productName)
-                .imageScale(.medium)
-                .padding()
-            Spacer()
-            
-            Button(action: {
-                guard !productName.isEmpty else { return }
-                            
-                let newProduct = Product(name: productName)
-                productsList.append(newProduct)
-                productName = ""
-            }) {
-                HStack {
-                    Image(systemName: "plus")
-                    Text("Product")
-                }
-            }
-            .buttonStyle(BorderedButtonStyle())
-            .clipShape(Capsule())
-            .padding()
-                        
-            List {
-                ForEach(productsList, id: \.self) { product in
-                    HStack {
-                        Image(systemName: "square")
-                        Text(product.getName())
-                    }
-                }
-            }
-            .navigationTitle("Added products") //TODO: nie pokazuje tytulu
-            
-            Button(action: {
-                var createdList = ShoppingList(name: newListName, products: productsList)
-                //print("New list created: \(createdList.getName()) \(createdList.getProducts())")
-                self.package.addList(createdList)
-                //print("Lists in package after adding: \(package.getLists())")
-                self.presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Save list")
-                    .foregroundColor(.white)
-                    .font(.headline)
-            }
-            .background(Color.green)
-            .buttonStyle(BorderedButtonStyle())
-            .clipShape(Capsule())
-            .padding()
-            
+        Form {
+            makeTitleSection()
+            makeAddProduct()
+            makeAddedProductsList()
+            makeSaveList()
+               
         }
         .navigationBarTitle("Create List")
     }
+    
+    @ViewBuilder private func makeTitleSection() -> some View {
+        
+        Section(header: Text("List Details")) {
+            TextField("Enter list name", text: $viewModel.newListName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .fixedSize()
+                .font(.title)
+
+                
+        }
+    }
+    
+    @ViewBuilder private func makeAddedProductsList() -> some View {
+        
+        Section(header: Text("Added Products")) {
+            ForEach(viewModel.productsList, id: \.self) { product in
+                HStack {
+                    Image(systemName: "square")
+                    Text(product.getName())
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder private func makeAddProduct() -> some View {
+        HStack {
+            TextField("Enter product name", text: $viewModel.productName)
+                .imageScale(.medium)
+            
+            Button(action: {
+                viewModel.addProduct()
+            }) {
+                Label("Add Product", systemImage: "plus")
+            }
+            .buttonStyle(BorderlessButtonStyle())
+        }
+    }
+
+    
+    @ViewBuilder private func makeSaveList() -> some View {
+        Section {
+            Button(action: {
+                viewModel.saveList(presentationMode: presentationMode)
+            }) {
+                Text("Save List")
+            }
+        }
+    }
+
+    
 }

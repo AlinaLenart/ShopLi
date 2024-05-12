@@ -19,7 +19,6 @@ final class ContentViewModel: ObservableObject {
 
 struct ContentView: View {
     @StateObject var viewModel: ContentViewModel
-    @State private var showingCreateListView = false
 
     var body: some View {
         NavigationView {
@@ -31,7 +30,7 @@ struct ContentView: View {
             .navigationBarTitle("Your Lists")
             .navigationBarItems(trailing: EditButton())
             .sheet(isPresented: $viewModel.showingCreateListView) {
-                CreateListView(package: viewModel.package)
+                CreateListView(viewModel: CreateListViewModel(package: viewModel.package)) //?
             }
         }
     }

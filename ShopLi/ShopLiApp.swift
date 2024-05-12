@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 @main
 struct ShopLiApp: App {
@@ -6,7 +7,7 @@ struct ShopLiApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(viewModel: ContentViewModel(package: Package()))
+            ContentView(viewModel: ContentViewModel(package: package))
         }
     }
 }
