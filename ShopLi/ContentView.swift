@@ -12,7 +12,7 @@ final class ContentViewModel: ObservableObject {
 
     func onDelete(indexSet: IndexSet) {
         indexSet.forEach { index in
-            package.deleteList(package.getLists()[index])
+            package.deleteList(package.lists[index])
         }
     }
 }
@@ -30,16 +30,16 @@ struct ContentView: View {
             .navigationBarTitle("Your Lists")
             .navigationBarItems(trailing: EditButton())
             .sheet(isPresented: $viewModel.showingCreateListView) {
-                CreateListView(viewModel: CreateListViewModel(package: viewModel.package)) //?
+                CreateListView(viewModel: CreateListViewModel(package: viewModel.package))
             }
         }
     }
 
     @ViewBuilder private func makeList() -> some View {
         List {
-            ForEach(viewModel.package.getLists()) { list in
-                NavigationLink(destination: ListView(list: list)) {
-                    Text(list.getName())
+            ForEach(viewModel.package.lists) { list in
+                NavigationLink(destination: ListDetailsView(viewModel: ListDetailsViewModel(list: list))) {
+                    Text(list.name)
                 }
             }
             .onDelete(perform: viewModel.onDelete)

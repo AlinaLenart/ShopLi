@@ -1,106 +1,168 @@
 import SwiftUI
 
 final class ListDetailsViewModel: ObservableObject {
-    @Published var newListName = ""
-    @Published var productName = ""
-    @Published var productsList: [Product] = []
+    @ObservedObject var list: ShoppingList
+    @Published var newProductName = ""
+    @Published var isRenameSheetPresented = false
+    @Published var newName = ""
+    
 
-    let package: Package
-
-    init(package: Package) {
-        self.package = package
+    init(list: ShoppingList) {
+        self.list = list
     }
 
+    func renameList() {
+        list.name = newName
+    }
+    
     func addProduct() {
-        guard !productName.isEmpty else { return }
-        
-        let newProduct = Product(name: productName)
-        productsList.append(newProduct)
-        productName = ""
+        guard !newProductName.isEmpty else { return }
+
+        let newProduct = Product(name: newProductName)
+        list.addProduct(newProduct)
+        newProductName = ""
     }
 
-    func saveList(presentationMode: Binding<PresentationMode>) {
-        let createdList = ShoppingList(name: newListName, products: productsList)
-        package.addList(createdList)
-        presentationMode.wrappedValue.dismiss()
-    }
 }
 
 struct ListDetailsView: View {
-    @ObservedObject var list: ShoppingList
-    @State private var newProductName = ""
+    @StateObject var viewModel: ListDetailsViewModel
 
     var body: some View {
         VStack {
-            List {
-                ForEach(list.getProducts()) { product in
-                    ProductRow(product: product,
-                        onToggleTapped: {
-                            product.toggleChecked()
-                        },
-                        onTrashTapped: {
-                            list.deleteProduct(productToDelete: product)
-                        })
-                }
+            makeList()
+            makeAddingNewProduct()
 
-            }
-            .padding()
-            .listStyle(.insetGrouped)
-
-            VStack {
-                TextField("Add new product", text: $newProductName)
-                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 4))
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(8)
-                    .fixedSize()
-
-                Button(action: {
-                    guard !newProductName.isEmpty else { return }
-
-                    let newProduct = Product(name: newProductName)
-                    list.addProduct(newProduct)
-                    newProductName = ""
+        }
+        .navigationBarTitle(viewModel.list.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: renameButton())
+        .sheet(isPresented: $viewModel.isRenameSheetPresented) {renameSheet()}
+    }
+    
+    @ViewBuilder private func renameButton() -> some View {
+        Button(action: {
+            viewModel.isRenameSheetPresented = true
                 }) {
-                    HStack {
-                        Image(systemName: "plus")
-                        Text("Product")
-                    }
+                    Image(systemName: "pencil")
                 }
-                .buttonStyle(BorderedButtonStyle())
-                .clipShape(Capsule())
-                .padding()
+    }
+    
+    @ViewBuilder private func renameSheet() -> some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Rename List")) {
+                    TextField("New Name", text: $viewModel.newName)
+                }
+                Button("Rename") {
+                    viewModel.renameList()
+                    viewModel.isRenameSheetPresented = false
+                }
+            }
+            .navigationBarTitle("Rename List", displayMode: .inline)
+            .navigationBarItems(leading: Button("Back") {
+                viewModel.isRenameSheetPresented = false
+            })
+            
+        }
+    }
+
+    
+    
+    @ViewBuilder private func makeList() -> some View {
+        List {
+            ForEach(viewModel.list.products) { product in
+                ProductRow(viewModel: ProductRowViewModel(product: product,
+                                        onTrashTapped: {
+                                            viewModel.list.deleteProduct(productToDelete: product)
+                                        }))
             }
 
         }
-        .navigationBarTitle(list.getName())
-        .navigationBarTitleDisplayMode(.inline)
+        .padding()
+        .listStyle(.insetGrouped)
     }
+    
+    @ViewBuilder private func makeAddingNewProduct() -> some View {
+        
+        VStack {
+            TextField("Add new product", text: $viewModel.newProductName)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(15)
+                .fixedSize()
+        
+            Button(action: {
+                viewModel.addProduct()
+            }) {
+                HStack {
+                    Image(systemName: "plus")
+                    Text("Product")
+                }
+            }
+            .buttonStyle(BorderedButtonStyle())
+            .clipShape(Capsule())
+            .padding()
+        }
+    }
+    
 }
 
-struct ProductRow: View {
+final class ProductRowViewModel: ObservableObject {
     @ObservedObject var product: Product
     var onToggleTapped: () -> Void
     var onTrashTapped: () -> Void
 
+
+    init(product: Product,  onTrashTapped: @escaping () -> Void) {
+        self.product = product
+        self.onToggleTapped = {
+            product.toggleChecked()
+        }
+        self.onTrashTapped = onTrashTapped
+    }
+    
+
+}
+
+
+struct ProductRow: View {
+    @StateObject var viewModel: ProductRowViewModel
+    
     var body: some View {
         HStack {
-            Button(action: {
-                onToggleTapped()
-            }) {
-                Image(systemName: product.getIsChecked() ? "checkmark.square.fill" : "square")
-            }
-
-            Text(product.getName())
-                .strikethrough(product.getIsChecked())
-
+            makeCheckbox()
             Spacer()
-
-            Button(action: {
-                onTrashTapped()
-            }) {
-                Image(systemName: "trash")
-            }
-            .buttonStyle(BorderlessButtonStyle())
+            makeTrashDelete()
+            
         }
     }
+    
+    @ViewBuilder private func makeCheckbox() -> some View {
+        Button(action: {
+            viewModel.onToggleTapped()
+        }) {
+            Image(systemName: viewModel.product.isChecked ? "checkmark.square.fill" : "square")
+        }
+
+        Text(viewModel.product.name)
+            .strikethrough(viewModel.product.isChecked)
+    }
+    @ViewBuilder private func makeTrashDelete() -> some View {
+        Button(action: {
+            viewModel.onTrashTapped()
+        }) {
+            Image(systemName: "trash")
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+    
 }
+
+
+/*onToggleTapped: {
+ product.toggleChecked()
+},
+onTrashTapped: {
+ viewModel.list.deleteProduct(productToDelete: product)
+}*/

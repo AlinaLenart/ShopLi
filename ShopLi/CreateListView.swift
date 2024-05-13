@@ -51,18 +51,25 @@ struct CreateListView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .fixedSize()
                 .font(.title)
-
                 
+            
         }
     }
     
     @ViewBuilder private func makeAddedProductsList() -> some View {
         
         Section(header: Text("Added Products")) {
+            
+            if viewModel.productsList.isEmpty {
+                Text("List is empty")
+                    .opacity(0.2)
+                
+            }
+            
             ForEach(viewModel.productsList, id: \.self) { product in
                 HStack {
                     Image(systemName: "square")
-                    Text(product.getName())
+                    Text(product.name)
                 }
             }
         }

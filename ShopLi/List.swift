@@ -1,7 +1,7 @@
 import Foundation
 
 class Package: ObservableObject {
-    @Published private var lists: [ShoppingList]
+    @Published var lists: [ShoppingList]
 
     init() {
         self.lists = []
@@ -17,10 +17,6 @@ class Package: ObservableObject {
         addList(list2)
     }
 
-    func getLists() -> [ShoppingList] {
-        return lists
-    }
-
     func addList(_ list: ShoppingList) {
         lists.append(list)
     }
@@ -34,8 +30,8 @@ class Package: ObservableObject {
 
 class ShoppingList: Identifiable, ObservableObject {
     var id = UUID()
-    @Published private var name: String
-    @Published private var products: [Product]
+    @Published var name: String
+    @Published var products: [Product]
     //var creationDate: Date
     //var isTemplate: Bool
 
@@ -62,26 +58,18 @@ class ShoppingList: Identifiable, ObservableObject {
         }
     }
 
-    func getName() -> String {
-        return name;
-    }
-    func setName(_ newName: String) -> Void {
-        self.name = newName
-    }
-    func getProducts() -> [Product] {
-        return products
-    }
+
 
 }
 
 class Product: Identifiable, Equatable, Hashable, ObservableObject {
     var id = UUID()
-    private var name: String
-    @Published private var isChecked: Bool
+    @Published var name: String
+    @Published var isChecked: Bool
 
-    init(name: String){
+    init(name: String, isChecked: Bool = false){
         self.name = name
-        self.isChecked = false
+        self.isChecked = isChecked
     }
 
     func toggleChecked() {
@@ -96,11 +84,4 @@ class Product: Identifiable, Equatable, Hashable, ObservableObject {
         hasher.combine(name)
     }
 
-    func getName() -> String {
-        return name;
-    }
-
-    func getIsChecked() -> Bool {
-        return isChecked
-    }
 }
