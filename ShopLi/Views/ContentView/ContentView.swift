@@ -1,24 +1,8 @@
 import Foundation
 import SwiftUI
 
-final class ContentViewModel: ObservableObject {
-    @Published var showingCreateListView = false
-
-    let package: Package
-
-    init(package: Package) {
-        self.package = package
-    }
-
-    func onDelete(indexSet: IndexSet) {
-        indexSet.forEach { index in
-            package.deleteList(package.lists[index])
-        }
-    }
-}
-
 struct ContentView: View {
-    @StateObject var viewModel: ContentViewModel
+    @ObservedObject var viewModel: ContentViewModel
 
     var body: some View {
         NavigationView {
@@ -38,7 +22,7 @@ struct ContentView: View {
     @ViewBuilder private func makeList() -> some View {
         List {
             ForEach(viewModel.package.lists) { list in
-                NavigationLink(destination: ListDetailsView(viewModel: ListDetailsViewModel(list: list))) {
+                NavigationLink(destination: ListDetailsView(viewModel: ListDetailsViewModel(package: viewModel.package, list: list))) {
                     Text(list.name)
                 }
             }

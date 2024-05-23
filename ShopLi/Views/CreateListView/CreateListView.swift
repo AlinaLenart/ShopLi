@@ -1,36 +1,9 @@
 import Foundation
 import SwiftUI
 
-final class CreateListViewModel: ObservableObject {
-    @Published var newListName = ""
-    @Published var productName = ""
-    @Published var productsList: [Product] = []
-
-    let package: Package
-
-    init(package: Package) {
-        self.package = package
-    }
-
-    func addProduct() {
-        guard !productName.isEmpty else { return }
-        
-        let newProduct = Product(name: productName)
-        productsList.append(newProduct)
-        productName = ""
-    }
-
-    func saveList(presentationMode: Binding<PresentationMode>) {
-        let createdList = ShoppingList(name: newListName, products: productsList)
-        package.addList(createdList)
-        presentationMode.wrappedValue.dismiss()
-    }
-}
-
-
 struct CreateListView: View {
 
-    @StateObject var viewModel: CreateListViewModel
+    @ObservedObject var viewModel: CreateListViewModel //ObservedObject or StateObject
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -51,8 +24,8 @@ struct CreateListView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .fixedSize()
                 .font(.title)
+                .disableAutocorrection(true)
                 
-            
         }
     }
     
@@ -79,6 +52,7 @@ struct CreateListView: View {
         HStack {
             TextField("Enter product name", text: $viewModel.productName)
                 .imageScale(.medium)
+                .disableAutocorrection(true)
             
             Button(action: {
                 viewModel.addProduct()
@@ -93,7 +67,8 @@ struct CreateListView: View {
     @ViewBuilder private func makeSaveList() -> some View {
         Section {
             Button(action: {
-                viewModel.saveList(presentationMode: presentationMode)
+                viewModel.saveList()
+                presentationMode.wrappedValue.dismiss()
             }) {
                 Text("Save List")
             }

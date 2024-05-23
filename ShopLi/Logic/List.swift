@@ -58,8 +58,6 @@ class ShoppingList: Identifiable, ObservableObject {
         }
     }
 
-
-
 }
 
 class Product: Identifiable, Equatable, Hashable, ObservableObject {
