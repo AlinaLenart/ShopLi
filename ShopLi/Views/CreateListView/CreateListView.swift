@@ -2,8 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CreateListView: View {
-
-    @ObservedObject var viewModel: CreateListViewModel //ObservedObject or StateObject
+    @StateObject var viewModel: CreateListViewModel //ObservedObject or StateObject
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -12,9 +11,9 @@ struct CreateListView: View {
             makeAddProduct()
             makeAddedProductsList()
             makeSaveList()
-               
         }
         .navigationBarTitle("Create List")
+        
     }
     
     @ViewBuilder private func makeTitleSection() -> some View {
@@ -23,9 +22,7 @@ struct CreateListView: View {
             TextField("Enter list name", text: $viewModel.newListName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .fixedSize()
-                .font(.title)
                 .disableAutocorrection(true)
-                
         }
     }
     
@@ -65,14 +62,14 @@ struct CreateListView: View {
 
     
     @ViewBuilder private func makeSaveList() -> some View {
-        Section {
-            Button(action: {
-                viewModel.saveList()
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Save List")
-            }
+    
+        Button(action: {
+            viewModel.saveList()
+            presentationMode.wrappedValue.dismiss()
+        }) {
+            Text("Save List")
         }
+    
     }
 
     

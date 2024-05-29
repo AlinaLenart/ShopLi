@@ -126,9 +126,9 @@
 		61F000E92BFF5968006C8D91 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				61F000E32BFF58D2006C8D91 /* ListDetailsView */,
 				61F000E42BFF58E7006C8D91 /* ContentView */,
 				61F000E82BFF595D006C8D91 /* CreateListView */,
+				61F000E32BFF58D2006C8D91 /* ListDetailsView */,
 			);
 			path = Views;
 			sourceTree = "<group>";

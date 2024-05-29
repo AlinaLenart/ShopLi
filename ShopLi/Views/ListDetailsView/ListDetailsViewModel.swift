@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 final class ListDetailsViewModel: ObservableObject {
-    @Published var package: Package
+    let package: Package
     @Published var list: ShoppingList
     @Published var newProductName = ""
     @Published var newName = ""
@@ -13,8 +13,8 @@ final class ListDetailsViewModel: ObservableObject {
         self.list = list
     }
 
-    func makeTemplate(){
-        
+    func duplicateList(){
+        package.addList(ShoppingList(name: list.name, products: list.products))
     }
     
     func deleteList(){

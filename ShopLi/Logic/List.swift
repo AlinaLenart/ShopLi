@@ -33,7 +33,6 @@ class ShoppingList: Identifiable, ObservableObject {
     @Published var name: String
     @Published var products: [Product]
     //var creationDate: Date
-    //var isTemplate: Bool
 
     init(name: String, products: [Product]) {
         self.name = name

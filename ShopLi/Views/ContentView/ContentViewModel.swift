@@ -8,9 +8,6 @@ final class ContentViewModel: ObservableObject {
         self.package = package
     }
 
-    func onDelete(indexSet: IndexSet) {
-        indexSet.forEach { index in
-            package.deleteList(package.lists[index])
-        }
-    }
+
+    
 }

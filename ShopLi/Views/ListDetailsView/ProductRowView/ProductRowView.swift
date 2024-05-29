@@ -32,6 +32,7 @@ struct ProductRow: View {
         }) {
             Image(systemName: "trash")
         }
+        .foregroundColor(.red)
         .buttonStyle(BorderlessButtonStyle())
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var viewModel: ContentViewModel
+    @StateObject var viewModel: ContentViewModel
 
     var body: some View {
         NavigationView {
@@ -12,11 +12,12 @@ struct ContentView: View {
                 makeCTASection()
             }
             .navigationBarTitle("Your Lists")
-            .navigationBarItems(trailing: EditButton())
             .sheet(isPresented: $viewModel.showingCreateListView) {
                 CreateListView(viewModel: CreateListViewModel(package: viewModel.package))
             }
+            
         }
+        
     }
 
     @ViewBuilder private func makeList() -> some View {
@@ -26,7 +27,6 @@ struct ContentView: View {
                     Text(list.name)
                 }
             }
-            .onDelete(perform: viewModel.onDelete)
         }
         .listStyle(.grouped)
     }
@@ -43,3 +43,5 @@ struct ContentView: View {
         .padding()
     }
 }
+
+

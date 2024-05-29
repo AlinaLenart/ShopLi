@@ -27,20 +27,22 @@ struct ListDetailsView: View {
                 Label("Rename List", systemImage: "pencil")
             }
             Button(action: {
-                viewModel.makeTemplate()
+                viewModel.duplicateList()
             }) {
-                Label("Make Template", systemImage: "doc.on.doc")
+                Label("Duplicate List", systemImage: "doc.on.doc")
             }
             Button(action: {
                 viewModel.deleteList()
                 presentationMode.wrappedValue.dismiss()
-
-            }) {
-                Label("Delete", systemImage: "trash")
+            })
+            {
+                Label("Delete List", systemImage: "trash")
             }
+            
         } label: {
             Image(systemName: "ellipsis.circle")
         }
+        
     }
     
     
@@ -95,3 +97,4 @@ struct ListDetailsView: View {
 onTrashTapped: {
  viewModel.list.deleteProduct(productToDelete: product)
 }*/
+

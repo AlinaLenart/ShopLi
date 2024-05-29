@@ -2,11 +2,10 @@ import Foundation
 import SwiftUI
 
 final class CreateListViewModel: ObservableObject {
+    let package: Package
     @Published var newListName = ""
     @Published var productName = ""
     @Published var productsList: [Product] = []
-
-    let package: Package
 
     init(package: Package) {
         self.package = package
