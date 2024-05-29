@@ -13,8 +13,11 @@ struct ContentView: View {
             }
             .navigationBarTitle("Your Lists")
             .sheet(isPresented: $viewModel.showingCreateListView) {
-                CreateListView(viewModel: CreateListViewModel(package: viewModel.package))
+                CreateListView(viewModel: CreateListViewModel(repository: viewModel.repository))
             }
+            .onAppear(perform: {
+                viewModel.getLists()
+            })
             
         }
         
@@ -22,8 +25,8 @@ struct ContentView: View {
 
     @ViewBuilder private func makeList() -> some View {
         List {
-            ForEach(viewModel.package.lists) { list in
-                NavigationLink(destination: ListDetailsView(viewModel: ListDetailsViewModel(package: viewModel.package, list: list))) {
+            ForEach(viewModel.lists) { list in
+                NavigationLink(destination: ListDetailsView(viewModel: ListDetailsViewModel(repository: viewModel.repository, list: list))) {
                     Text(list.name)
                 }
             }

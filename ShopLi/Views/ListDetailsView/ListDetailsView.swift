@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct ListDetailsView: View {
-    @ObservedObject var viewModel: ListDetailsViewModel
+    @StateObject var viewModel: ListDetailsViewModel
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         VStack {
             makeList()
             makeAddingNewProduct()
-
+            
         }
         .navigationBarTitle(viewModel.list.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -18,7 +18,7 @@ struct ListDetailsView: View {
         }
         
     }
-    
+
     @ViewBuilder private func optionsMenu() -> some View {
         Menu {
             Button(action: {
@@ -49,15 +49,16 @@ struct ListDetailsView: View {
     @ViewBuilder private func makeList() -> some View {
         List {
             ForEach(viewModel.list.products) { product in
-                ProductRow(viewModel: ProductRowViewModel(product: product,
-                      onTrashTapped: {
-                            viewModel.list.deleteProduct(productToDelete: product)
-                      },
-                      onToggleTapped: {
-                            product.toggleChecked()
-                      }))
+                ProductRow(product: product,
+                           onTrashTapped: {
+                    viewModel.deleteProduct(product: product)
+                },
+                           onToggleTapped: {
+                    viewModel.toggleProduct(product: product)
+                })
+                
             }
-
+            
         }
         .padding()
         .listStyle(.insetGrouped)
@@ -71,7 +72,7 @@ struct ListDetailsView: View {
                 .cornerRadius(15)
                 .fixedSize()
                 .disableAutocorrection(true)
-        
+            
             Button(action: {
                 viewModel.addProduct()
             }) {
@@ -93,8 +94,8 @@ struct ListDetailsView: View {
 
 /*onToggleTapped: {
  product.toggleChecked()
-},
-onTrashTapped: {
+ },
+ onTrashTapped: {
  viewModel.list.deleteProduct(productToDelete: product)
-}*/
+ }*/
 

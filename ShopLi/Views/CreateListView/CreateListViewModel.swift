@@ -2,13 +2,14 @@ import Foundation
 import SwiftUI
 
 final class CreateListViewModel: ObservableObject {
-    let package: Package
+    @Published var lists: [ShoppingList] = []
+    private let repository: PackageRepositoryProtocol
     @Published var newListName = ""
     @Published var productName = ""
     @Published var productsList: [Product] = []
 
-    init(package: Package) {
-        self.package = package
+    init(repository: PackageRepositoryProtocol) {
+        self.repository = repository
     }
 
     func addProduct() {
@@ -21,6 +22,6 @@ final class CreateListViewModel: ObservableObject {
 
     func saveList() {
         let createdList = ShoppingList(name: newListName, products: productsList)
-        package.addList(createdList)
+        repository.addList(createdList)
     }
 }

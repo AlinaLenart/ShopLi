@@ -2,35 +2,45 @@ import Foundation
 import SwiftUI
 
 final class ListDetailsViewModel: ObservableObject {
-    let package: Package
+    @Published var lists: [ShoppingList] = []
+    let repository: PackageRepositoryProtocol
     @Published var list: ShoppingList
     @Published var newProductName = ""
     @Published var newName = ""
     @Published var showRenameSheet = false
     
-    init(package: Package, list: ShoppingList) {
-        self.package = package
+    init(repository: PackageRepositoryProtocol, list: ShoppingList) {
+        self.repository = repository
         self.list = list
     }
 
     func duplicateList(){
-        package.addList(ShoppingList(name: list.name, products: list.products))
+        repository.addList(ShoppingList(name: list.name, products: list.products))
     }
     
     func deleteList(){
-        package.deleteList(list)
+        repository.deleteList(list)
     }
     
     func renameList(_ newName: String){
-        list.name = newName
+        list.name = newName //todo
+    }
+    
+    func deleteProduct(product: Product) {
+        repository.deleteProduct(from: list, productToDelete: product)
+        objectWillChange.send()
     }
     
     func addProduct() {
         guard !newProductName.isEmpty else { return }
 
         let newProduct = Product(name: newProductName)
-        list.addProduct(newProduct)
+        repository.addProduct(to: list, newProduct)
         newProductName = ""
+    }
+    func toggleProduct(product: Product){
+        repository.checkProduct(from: list, productToCheck: product)
+        objectWillChange.send()
     }
 
 }

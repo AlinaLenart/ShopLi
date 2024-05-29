@@ -2,7 +2,9 @@ import Foundation
 import SwiftUI
 
 struct ProductRow: View {
-    @ObservedObject var viewModel: ProductRowViewModel
+    var product: Product
+    var onTrashTapped: () -> Void
+    var onToggleTapped: () -> Void
     
     var body: some View {
         HStack {
@@ -15,20 +17,20 @@ struct ProductRow: View {
     
     @ViewBuilder private func makeCheckbox() -> some View {
         Button(action: {
-            viewModel.onToggleTapped()
+            onToggleTapped()
         }) {
-            Image(systemName: viewModel.product.isChecked ? "checkmark.square.fill" : "square")
+            Image(systemName: product.isChecked ? "checkmark.square.fill" : "square")
         }
     }
 
     @ViewBuilder private func makeProductName() -> some View {
-        Text(viewModel.product.name)
-            .strikethrough(viewModel.product.isChecked)
+        Text(product.name)
+            .strikethrough(product.isChecked)
     }
     
     @ViewBuilder private func makeTrashDelete() -> some View {
         Button(action: {
-            viewModel.onTrashTapped()
+            onTrashTapped()
         }) {
             Image(systemName: "trash")
         }

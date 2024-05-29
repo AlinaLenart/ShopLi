@@ -2,12 +2,15 @@ import Foundation
 
 final class ContentViewModel: ObservableObject {
     @Published var showingCreateListView = false
-    @Published var package: Package
+    @Published var lists: [ShoppingList] = []
+    let repository: PackageRepositoryProtocol
 
-    init(package: Package) {
-        self.package = package
+    init(repository: PackageRepositoryProtocol) {
+        self.repository = repository
     }
-
-
+    
+    func getLists(){
+        lists = repository.getShoppingLists()
+    }
     
 }

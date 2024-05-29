@@ -36,7 +36,7 @@ struct CreateListView: View {
                 
             }
             
-            ForEach(viewModel.productsList, id: \.self) { product in
+            ForEach(viewModel.productsList, id: \.id) { product in
                 HStack {
                     Image(systemName: "square")
                     Text(product.name)
